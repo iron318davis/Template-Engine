@@ -10,9 +10,120 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+const employees = [];
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
+
+function createManager() {
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "name",
+            message: "Managers Name:"
+        },
+        {
+            type: "input",
+            name: "id",
+            message: "Managers ID number:"
+        },
+        {
+            type: "input",
+            name: "email",
+            message: "Managers email address:"
+        },
+        {
+            type: "input",
+            name: "officenumber",
+            message: "Managers office number:"
+        },
+    ]).then(function (data) {
+        const newManager = new Manager(data.name, data.id, data.email, data.officenumber)
+        addTeamMember(newManager)
+    })
+}
+function createTeam() {
+    inquirer.prompt([
+        {
+            type: "list",
+            name: "role",
+            message: "Employee Type:",
+            choices: [
+                "Engineer",
+                "Intern"
+            ]
+        },
+        {
+            type: "input",
+            name: "name",
+            message: "Name:"
+        },
+        {
+            type: "input",
+            name: "id",
+            message: "ID number:"
+        },
+        {
+            type: "input",
+            name: "email",
+            message: "Email address:"
+        },
+    ]).then(function(data){
+        if (data.role === "Engineer") {
+            inquirer.prompt([
+                {
+                    type: "input",
+                    name: "github",
+                    message: "Github Username:"
+                },
+            ]).then(function (unique){
+                const newEngineer = new Engineer(data.name, data.id, data.email, unique.github)
+                addTeamMember(newEngineer)
+            })
+        }else if(data.role === "Intern") {
+            inquirer.prompt([
+                {
+                    type:"input",
+                    name:"school",
+                    message:"School Name:"
+                },
+            ]).then(function (unique){
+                const newIntern = new Intern(data.name, data.id, data.email, unique.school)
+                addTeamMember(newIntern)
+            })
+        }
+    })
+}
+function finish() {
+    if (!fs.existsSync(OUTPUT_DIR)) {
+        fs.mkdirSync(OUTPUT_DIR)
+    }
+    fs.writeFileSync(outputPath, render(employees), "utf-8");
+    console.log("Export Complete")
+}
+
+function addTeamMember(newEmployee) {
+    employees.push(newEmployee);
+    inquirer.prompt([
+        {
+            type:"list",
+            name:"action",
+            message:"Next action:",
+            choices:[
+                "Add team member",
+                "Finish and export team"
+            ]
+        }
+    ]).then(function(response) {
+        if (response.action === "Add team member") {
+            createTeam();
+        }else{
+            finish();
+        }
+    })
+}
+
+createManager();
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
