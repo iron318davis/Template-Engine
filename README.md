@@ -32,3 +32,8 @@ npm run test
 
 ### Video
  http://youtu.be/R1A3XLC6ZCc?hd=1
+
+ ### Images of Weather Dashboard <br />
+![](Screenshots/TestsPassed.png)
+![](Screenshots/WorkingApplication.png)
+![](Screenshots/WorkingApplicationHTML.png)
